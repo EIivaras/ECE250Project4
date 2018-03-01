@@ -38,7 +38,7 @@ enum bin_state_t { UNOCCUPIED, OCCUPIED, ERASED };
 template <typename Type>
 class Quadratic_hash_table {
 private:
-	int count;
+	int count; // Amount of objects in array
 	int power;
 	int array_size;
 	int mask;
@@ -109,26 +109,22 @@ Quadratic_hash_table<Type>::~Quadratic_hash_table() {
 
 template <typename Type>
 int Quadratic_hash_table<Type>::size() const {
-	// Implementation Required
-	return 0;
+	return count;
 }
 
 template <typename Type>
 int Quadratic_hash_table<Type>::capacity() const {
-	// Implementation Required
-	return 0;
+	return array_size;
 }
 
 template <typename Type>
 double Quadratic_hash_table<Type>::load_factor() const {
-	// Implementation Required
-	return 0;
+	return count/array_size;
 }
 
 template <typename Type>
 bool Quadratic_hash_table<Type>::empty() const {
-	// Implementation Required
-	return false;
+	return count == 0;
 }
 
 template <typename Type>
