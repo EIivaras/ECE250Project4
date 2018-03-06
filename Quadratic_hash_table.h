@@ -23,8 +23,8 @@
 *    -
 *****************************************/
 
-#ifndef DOUBLE_HASH_TABLE_H
-#define DOUBLE_HASH_TABLE_H
+#ifndef QUADRATIC_HASH_TABLE_H
+#define QUADRATIC_HASH_TABLE_H
 
 #ifndef nullptr
 #define nullptr 0
@@ -81,8 +81,13 @@ public:
 /////////////////////////////////////////////////////////////
 
 template <typename Type>
-int Quadratic_hash_table<Type>::hash(Type const &) const {
-	// Implementation required
+int Quadratic_hash_table<Type>::hash(Type const & value) const {
+	int index = static_cast<int>(value);
+	int result = index % mask; // can't do index % array_size because then you could get 16 as your index!
+	if (result < 0) {
+		result += mask;
+	}
+	return index;
 }
 
 /////////////////////////////////////////////////////////////
@@ -91,8 +96,8 @@ int Quadratic_hash_table<Type>::hash(Type const &) const {
 
 template <typename Type>
 Quadratic_hash_table<Type>::Quadratic_hash_table(int m) :
-	count(0), power(m),
-	array_size(1 << power),
+	count(0), power(m), // hash table is created with 2^m bins
+	array_size(1 << power), // so, since left shifting is multiplying the number by 2, the array_size can be calculated from 1*(2*# of left shifts)
 	mask(array_size - 1),
 	array(new Type[array_size]),
 	occupied(new bin_state_t[array_size]) {
@@ -134,10 +139,8 @@ bool Quadratic_hash_table<Type>::member(Type const &) const {
 }
 
 template <typename Type>
-Type Quadratic_hash_table<Type>::bin(int) const {
-	// Implementation Required
-	Type x = 1; // Temporary for compilation purposes
-	return x; // Temporary for compilation purposes
+Type Quadratic_hash_table<Type>::bin(int n) const {
+	return array[n];
 }
 
 template <typename Type>
@@ -146,8 +149,16 @@ void Quadratic_hash_table<Type>::print() const {
 }
 
 template <typename Type>
-void Quadratic_hash_table<Type>::insert(Type const &) {
-	// Implementation Required
+void Quadratic_hash_table<Type>::insert(Type const & value) {
+	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
+	int index = initial_index; // The index where we will ACTUALLY insert our value into
+	int i = 0; // This will be what we add to our initial index every time we try and insert into a slot in the array that is already occupied
+	while (occupied[index] == OCCUPIED) {
+		i++;
+		index = (initial_index + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+	}
+	array[index] = value;
+	occupied[index] = OCCUPIED;
 }
 
 template <typename Type>
