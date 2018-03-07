@@ -38,23 +38,37 @@ int main() {
 	quad_hash.erase(0);
 	std::cout << quad_hash << std::endl << std::endl;
 
-	std::cout << "////// ADVANCED TESTS //////" << std::endl << std::endl;
+	std::cout << "////// ANOTHER TEST //////" << std::endl << std::endl;
 
 	Quadratic_hash_table<int> quad_hash2(5);
 
 	std::cout << "Insert 31" << std::endl;
 	quad_hash2.insert(31);
 	std::cout << quad_hash2 << std::endl;
+	std::cout << "Load factor: " << quad_hash2.load_factor() << std::endl;
 	std::cout << "Insert 191" << std::endl;
 	quad_hash2.insert(191);
 	std::cout << quad_hash2 << std::endl;
-	std::cout << "Index of 31: " << quad_hash2.bin(31) << std::endl;
-	std::cout << "Index of 191: " << quad_hash.bin(191) << std::endl;
+	std::cout << "Check index 31: " << quad_hash2.bin(31) << std::endl;
+	std::cout << "Check index 0: " << quad_hash2.bin(0) << std::endl;
 	std::cout << "Insert 159" << std::endl;
 	quad_hash2.insert(159);
 	std::cout << quad_hash2 << std::endl;
 	std::cout << "Erase 159" << std::endl;
 	quad_hash2.erase(159);
 	std::cout << quad_hash2 << std::endl;
-	std::cout << "Check if 159 is still in: " << quad_hash2.member(159) << std::endl;
+	std::cout << "Check if 159 is still in: " << quad_hash2.member(159) << std::endl << std::endl;
+
+	std::cout << "////// ADVANCED TEST //////" << std::endl << std::endl;
+
+	Quadratic_hash_table<int> quad_hash3(5);
+	quad_hash3.insert(31);
+	std::cout << quad_hash3 << std::endl;
+	quad_hash3.insert(191);
+	std::cout << quad_hash3 << std::endl;
+	quad_hash3.erase(31);
+	std::cout << quad_hash3 << std::endl;
+	quad_hash3.insert(191);
+	std::cout << quad_hash3 << std::endl;
+	quad_hash3.erase(191);
 }

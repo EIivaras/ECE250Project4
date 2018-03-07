@@ -124,7 +124,14 @@ int Quadratic_hash_table<Type>::capacity() const {
 
 template <typename Type>
 double Quadratic_hash_table<Type>::load_factor() const {
-	return count/array_size;
+	double slotsNotOccupied = 0;
+	for (int i = 0; i < array_size; i++) {
+		if (occupied[i] != UNOCCUPIED) {
+			slotsNotOccupied++;
+		}
+	}
+	double load_factor = slotsNotOccupied/array_size;
+	return load_factor;
 }
 
 template <typename Type>
@@ -164,6 +171,10 @@ void Quadratic_hash_table<Type>::print() const {
 
 template <typename Type>
 void Quadratic_hash_table<Type>::insert(Type const & value) {
+	bool already_exists = member(value); // First thing we need to do is make sure the value we're about to insert is NOT in the array
+	if (already_exists) { // If it is,
+		return; // return
+	}
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
 	int previous = initial_index; // will store the previous value
@@ -175,10 +186,6 @@ void Quadratic_hash_table<Type>::insert(Type const & value) {
 			return;
 		}
 		else {
-			if (array[index] == value) { // if the value is already in the quadratic hash table
-				return; // do nothing (exit fxn)
-			}
-			// TODO: IS THE BELOW FXN FOR INDEX CORRECT?! If it was just + i it would be linear probing, yeah?
 			index = (previous + i) % array_size; // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
 			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
@@ -214,10 +221,10 @@ bool Quadratic_hash_table<Type>::erase(Type const & value) {
 template <typename Type>
 void Quadratic_hash_table<Type>::clear()  {
 	count = 0;
-	power = 0;
-	array_size = 0;
-	array = nullptr;
-	occupied = nullptr;
+	for (int i = 0; i < array_size; i++) {
+		occupied[i] = UNOCCUPIED; // We don't actually erase anything- just set it all to unoccupied!
+	}
+	return;
 }
 
 /////////////////////////////////////////////////////////////
