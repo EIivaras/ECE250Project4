@@ -134,8 +134,22 @@ bool Quadratic_hash_table<Type>::empty() const {
 
 template <typename Type>
 bool Quadratic_hash_table<Type>::member(Type const &) const {
-	// Implementation Required
-	return false;
+	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
+	int index = initial_index; // The index where we will ACTUALLY insert our value into
+	int previous = initial_index; // will store the previous value
+	for (int i = 1; i < array_size - 1; i++) {
+		if (occupied[index] == UNOCCUPIED) { // If we reach an unoccupied slot in our search, then the value must never have been inserted
+			return false; // thus, we return false
+		}
+		else { // otherwise, the slot is either OCCUPIED or ERASED
+			if (array[index] == value) {
+				return true; // return true if we've found the value
+			}
+			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
+		}
+	}
+	return false; // if we made it out of the for loop, the array is full and the object doesn't exist in it
 }
 
 template <typename Type>
