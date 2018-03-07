@@ -14,11 +14,12 @@
 * end-of-file.
 ****************************************************/
 
+/*
 #include <iostream>
 #include <cstring>
 #include "Quadratic_hash_table_tester.h"
 
-int main(int argc, char *argv[]) {
+int _main(int argc, char *argv[]) {
 	if (argc > 2) {
 		std::cerr << "Expecting at most one command-line argument" << std::endl;
 
@@ -46,3 +47,4 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+*/

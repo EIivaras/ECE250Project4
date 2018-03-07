@@ -87,7 +87,7 @@ int Quadratic_hash_table<Type>::hash(Type const & value) const {
 	if (result < 0) {
 		result += mask;
 	}
-	return index;
+	return result;
 }
 
 /////////////////////////////////////////////////////////////
@@ -152,6 +152,7 @@ template <typename Type>
 void Quadratic_hash_table<Type>::insert(Type const & value) {
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
+	int previous = initial_index; // will store the previous value
 	for (int i = 1; i < array_size - 1; i++) {
 		if (occupied[index] != OCCUPIED) {
 			array[index] = value;
@@ -159,8 +160,12 @@ void Quadratic_hash_table<Type>::insert(Type const & value) {
 			return;
 		}
 		else {
+			if (array[index] == value) { // if the value is already in the quadratic hash table
+				return; // do nothing (exit fxn)
+			}
 			// TODO: IS THE BELOW FXN FOR INDEX CORRECT?! If it was just + i it would be linear probing, yeah?
-			index = (initial_index + i^2) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
 	}
 	throw overflow(); // If we made it out of the for loop, the array must be full, so we throw an overflow exception
@@ -170,14 +175,12 @@ template <typename Type>
 bool Quadratic_hash_table<Type>::erase(Type const & value) {
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
+	int previous = initial_index; // will store the previous value
 	for (int i = 1; i < array_size - 1; i++) {
 		if (occupied[index] == UNOCCUPIED) { // If we reach an unoccupied slot in our search, then the value must never have been inserted
 			return false; // thus, we return false
 		}
-		else if (occupied[index] == ERASED) {
-			continue;
-		}
-		else {
+		else { // otherwise, the slot is either OCCUPIED or ERASED
 			if (array[index] == value) {
 				occupied[index] = ERASED; // all we need to do is set the value at the value's index in occupied[] to be ERASED- 
 				                          // just like with a stack, we don't actually need to clear the values,
@@ -185,7 +188,8 @@ bool Quadratic_hash_table<Type>::erase(Type const & value) {
 				                          // which, in the latter case, will just overwrite the previous value
 				return true; // return true on successful erase
 			}
-			index = (initial_index + i ^ 2) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
 	}
 	return false; // if we made it out of the for loop, the array is full and the object doesn't exist in it
