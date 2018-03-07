@@ -19,7 +19,7 @@
 #include <cstring>
 #include "Quadratic_hash_table_tester.h"
 
-int _main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	if (argc > 2) {
 		std::cerr << "Expecting at most one command-line argument" << std::endl;
 

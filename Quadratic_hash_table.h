@@ -83,9 +83,9 @@ public:
 template <typename Type>
 int Quadratic_hash_table<Type>::hash(Type const & value) const {
 	int index = static_cast<int>(value);
-	int result = index % mask; // can't do index % array_size because then you could get 16 as your index!
+	int result = index % array_size;
 	if (result < 0) {
-		result += mask;
+		result += array_size;
 	}
 	return result;
 }
@@ -133,19 +133,19 @@ bool Quadratic_hash_table<Type>::empty() const {
 }
 
 template <typename Type>
-bool Quadratic_hash_table<Type>::member(Type const &) const {
+bool Quadratic_hash_table<Type>::member(Type const & value) const {
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
 	int previous = initial_index; // will store the previous value
-	for (int i = 1; i < array_size - 1; i++) {
+	for (int i = 1; i < array_size; i++) {
 		if (occupied[index] == UNOCCUPIED) { // If we reach an unoccupied slot in our search, then the value must never have been inserted
 			return false; // thus, we return false
 		}
 		else { // otherwise, the slot is either OCCUPIED or ERASED
-			if (array[index] == value) {
+			if (array[index] == value && occupied[index] != ERASED) { // Since we don't actually erase the values, we need to add the second check else we might get a false positive
 				return true; // return true if we've found the value
 			}
-			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			index = (previous + i) % array_size; // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
 			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
 	}
@@ -167,10 +167,11 @@ void Quadratic_hash_table<Type>::insert(Type const & value) {
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
 	int previous = initial_index; // will store the previous value
-	for (int i = 1; i < array_size - 1; i++) {
+	for (int i = 1; i < array_size; i++) {
 		if (occupied[index] != OCCUPIED) {
 			array[index] = value;
 			occupied[index] = OCCUPIED;
+			count++;
 			return;
 		}
 		else {
@@ -178,7 +179,7 @@ void Quadratic_hash_table<Type>::insert(Type const & value) {
 				return; // do nothing (exit fxn)
 			}
 			// TODO: IS THE BELOW FXN FOR INDEX CORRECT?! If it was just + i it would be linear probing, yeah?
-			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			index = (previous + i) % array_size; // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
 			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
 	}
@@ -190,19 +191,20 @@ bool Quadratic_hash_table<Type>::erase(Type const & value) {
 	int initial_index = hash(value); // The initial index that we would IDEALLY like to insert our object into, returned by the hash fxn
 	int index = initial_index; // The index where we will ACTUALLY insert our value into
 	int previous = initial_index; // will store the previous value
-	for (int i = 1; i < array_size - 1; i++) {
+	for (int i = 1; i < array_size; i++) {
 		if (occupied[index] == UNOCCUPIED) { // If we reach an unoccupied slot in our search, then the value must never have been inserted
 			return false; // thus, we return false
 		}
 		else { // otherwise, the slot is either OCCUPIED or ERASED
-			if (array[index] == value) {
+			if (array[index] == value && occupied[index] != ERASED) { // Since we don't actually erase the value, we need the second check else we might get a false positive
 				occupied[index] = ERASED; // all we need to do is set the value at the value's index in occupied[] to be ERASED- 
 				                          // just like with a stack, we don't actually need to clear the values,
 				                          // as insert will insert into any index marked as unoccupied AND erased,
 				                          // which, in the latter case, will just overwrite the previous value
+				count--;
 				return true; // return true on successful erase
 			}
-			index = (previous + i) % (array_size - 1); // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
+			index = (previous + i) % array_size; // Make sure we mod 15, so we wrap back around if adding i gives us a value greater than array_size - 1
 			previous = index; // set previous AFTER we calculate the new index, otherwise previous and index will be the same
 		}
 	}
